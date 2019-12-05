@@ -210,9 +210,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="GCloud util")
     parser.add_argument('numberOfVms', metavar='numberOfVms', type=int)
     parser.add_argument('container', metavar='container')
+    parser.add_argument('pathToOutput', metavar='pathToOutput')
     args = parser.parse_args()
     numberOfVms = args.numberOfVms
     container = args.container
+    pathToOutput = args.pathToOutput
     print("Initialize variables.")
     cmd = runDocker(container)
     project = 'cloud-infrastructure-project'
@@ -280,7 +282,7 @@ if __name__ == '__main__':
             fields='networkInterfaces/accessConfigs/natIP'
         ).execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
         computes.append(compute)
-        thread = threading.Thread(target=runCommands, args=(cmd, project, ids[i], zone, oslogin, account, hostname))
+        thread = threading.Thread(target=runCommands, args=(cmd, project, ids[i], zone, oslogin, account, hostname, pathToOutput))
         threads.append(thread)
 
     print("Test SSH to the instance.")

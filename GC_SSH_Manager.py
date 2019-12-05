@@ -83,7 +83,7 @@ def create_ssh_key(oslogin, account, private_key_file=None, expire_time=300):
 
 
 # [START run_command_remote]
-def run_ssh(cmd, private_key_file, username, hostname):
+def run_ssh(cmd, private_key_file, username, hostname, pathForOutput):
     """Run a command on a remote system."""
     ssh_command = [
         'ssh', '-i', private_key_file, '-o', 'StrictHostKeyChecking=no',
@@ -91,7 +91,7 @@ def run_ssh(cmd, private_key_file, username, hostname):
         cmd,
     ]
     print("----------------- issuing command:" + cmd + " at:" + hostname + "----------------- ")
-    path = os.path.join(os.getcwd(), 'command at {hn}_{time}.log'.format(hn=hostname, time= datetime.datetime.now().strftime("%I:%M:%S%p on %B %d, %Y")) )
+    path = os.path.join(pathForOutput, 'command at {hn}_{time}.log'.format(hn=hostname, time= datetime.datetime.now().strftime("%I:%M:%S%p on %B %d, %Y")) )
     log = open(path, 'a')
     log.write("----------------- issuing command:" + cmd + " at:" + hostname + "----------------- ")
     subprocess.Popen(
@@ -101,7 +101,7 @@ def run_ssh(cmd, private_key_file, username, hostname):
     time.sleep(60)
 
 def runCommands(cmds, project, instance=None, zone=None,
-                oslogin=None, account=None, hostname=None):
+                oslogin=None, account=None, hostname=None, pathForOutput=None):
     """Run a command on a remote system."""
 
     print("Create the OS Login API object.")
@@ -136,7 +136,7 @@ def runCommands(cmds, project, instance=None, zone=None,
         print("Create the hostname of the target instance using the instance name, \n the zone where the instance is located, and the project that owns the \n instance.")
         hostname = hostname or '{instance}.{zone}.c.{project}.internal'.format(
             instance=instance, zone=zone, project=project)
-        run_ssh(c, private_key_file, username, hostname)
+        run_ssh(c, private_key_file, username, hostname, pathForOutput)
         os.system("ssh-keygen -f \"/home/ciuser/.ssh/known_hosts\" -R \"{hostname}\"".format(hostname = hostname))
 
 
